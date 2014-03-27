@@ -1,12 +1,11 @@
 package player;
 
-import java.awt.Font;
+import java.util.ArrayList;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.command.BasicCommand;
 import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
@@ -16,19 +15,21 @@ import org.newdawn.slick.command.KeyControl;
 public class Player implements InputProviderListener {
 	private InputProvider provider;
 
-	private Command up = new BasicCommand("up");
-	private Command left = new BasicCommand("left");
-	private Command down = new BasicCommand("down");
-	private Command right = new BasicCommand("right");
-	private Command shoot = new BasicCommand("shoot");
+	private Command commandUp = new BasicCommand("up");
+	private Command commandLeft = new BasicCommand("left");
+	private Command commandDown = new BasicCommand("down");
+	private Command commandRight = new BasicCommand("right");
+	private Command commandShoot = new BasicCommand("shoot");
 	
-	private Direction horizontal = Direction.NONE;
-	private Direction vertical = Direction.NONE;
+	private ArrayList<Ray> rays;
+	
+	private boolean up, down, left, right;
 
-	private double x, y;
-	private double speed;
+	private float x, y;
+	private float speed;
 	
 	public Player() {
+		rays = new ArrayList<Ray>();
 		speed = 2;
 	}
 	
@@ -36,64 +37,89 @@ public class Player implements InputProviderListener {
 		provider = new InputProvider(gc.getInput());
 
 		provider.addListener(this);
-		provider.bindCommand(new KeyControl(Input.KEY_UP), up);
-		provider.bindCommand(new KeyControl(Input.KEY_W), up);
-		provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
-		provider.bindCommand(new KeyControl(Input.KEY_A), left);
-		provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
-		provider.bindCommand(new KeyControl(Input.KEY_S), down);
-		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
-		provider.bindCommand(new KeyControl(Input.KEY_D), right);
-		provider.bindCommand(new KeyControl(Input.KEY_SPACE), shoot);
+		provider.bindCommand(new KeyControl(Input.KEY_UP), commandUp);
+		provider.bindCommand(new KeyControl(Input.KEY_W), commandUp);
+		provider.bindCommand(new KeyControl(Input.KEY_LEFT), commandLeft);
+		provider.bindCommand(new KeyControl(Input.KEY_A), commandLeft);
+		provider.bindCommand(new KeyControl(Input.KEY_DOWN), commandDown);
+		provider.bindCommand(new KeyControl(Input.KEY_S), commandDown);
+		provider.bindCommand(new KeyControl(Input.KEY_RIGHT), commandRight);
+		provider.bindCommand(new KeyControl(Input.KEY_D), commandRight);
+		provider.bindCommand(new KeyControl(Input.KEY_SPACE), commandShoot);
+		
+		rays.add(new Ray(this, 0, 0));
+		rays.add(new Ray(this, gc.getWidth(), 0));
+		rays.add(new Ray(this, 0, gc.getHeight()));
+		rays.add(new Ray(this, gc.getWidth(), gc.getHeight()));
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		g.fillOval((int)x, (int)y, 10, 10);
+		for (Ray r : rays) {
+			r.render(gc, g);
+		}
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
-		if (horizontal.equals(Direction.FORWARD)) {
-			x += speed;
+		if (up) {
+			y -= speed;
 		}
 		
-		if (horizontal.equals(Direction.BACKWARD)) {
+		if (left) {
 			x -= speed;
 		}
 		
-		if (vertical.equals(Direction.FORWARD)) {
+		if (down) {
 			y += speed;
 		}
 		
-		if (vertical.equals(Direction.BACKWARD)) {
-			y -= speed;
+		if (right) {
+			x += speed;
 		}
 	}
 
 	@Override
 	public void controlPressed(Command command) {
-		if (command.equals(up)) {
-			vertical = Direction.BACKWARD;
-		}
-		else if (command.equals(down)) {
-			vertical = Direction.FORWARD;
+		if (command.equals(commandUp)) {
+			up = true;
 		}
 		
-		if (command.equals(left)) {
-			horizontal = Direction.BACKWARD;
+		if (command.equals(commandLeft)) {
+			left = true;
 		}
-		else if (command.equals(right)) {
-			horizontal = Direction.FORWARD;
+		
+		if (command.equals(commandDown)) {
+			down = true;
+		}
+		
+		if (command.equals(commandRight)) {
+			right = true;
 		}
 	}
 
 	@Override
 	public void controlReleased(Command command) {
-		if (command.equals(up) || command.equals(down)) {
-			vertical = Direction.NONE;
+		if (command.equals(commandUp)) {
+			up = false;
 		}
 		
-		if (command.equals(left) || command.equals(right)) {
-			horizontal = Direction.NONE;
+		if (command.equals(commandLeft)) {
+			left = false;
+		}
+		
+		if (command.equals(commandDown)) {
+			down = false;
+		}
+		
+		if (command.equals(commandRight)) {
+			right = false;
 		}
 	}
 }
