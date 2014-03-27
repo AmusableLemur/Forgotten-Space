@@ -12,7 +12,7 @@ public class Game extends BasicGame {
 	public Game(String title) {
 		super(title);
 		
-		this.menu = new Menu();
+		this.menu = new Menu(this);
 		this.state = State.MENU;
 	}
 
@@ -44,6 +44,8 @@ public class Game extends BasicGame {
 				break;
 			case PLAYING:
 				break;
+			case QUIT:
+				gc.exit();
 		}
 	}
 

@@ -27,8 +27,10 @@ public class Menu implements InputProviderListener {
 	
 	private InputProvider provider;
 	
-	public Menu() {
-		
+	private Game game;
+	
+	public Menu(Game g) {
+		this.game = g;
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
@@ -57,7 +59,11 @@ public class Menu implements InputProviderListener {
 
 		provider.addListener(this);
 		provider.bindCommand(new KeyControl(Input.KEY_UP), up);
+		provider.bindCommand(new KeyControl(Input.KEY_W), up);
 		provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
+		provider.bindCommand(new KeyControl(Input.KEY_S), down);
+		provider.bindCommand(new KeyControl(Input.KEY_ENTER), select);
+		provider.bindCommand(new KeyControl(Input.KEY_SPACE), select);
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
@@ -79,6 +85,15 @@ public class Menu implements InputProviderListener {
 			
 			if (choice >= options.length) {
 				choice = options.length - 1;
+			}
+		}
+		
+		if (c.equals(select)) {
+			if (choice == 0) {
+				game.setState(State.PLAYING);
+			}
+			else if (choice == 2) {
+				game.setState(State.QUIT);
 			}
 		}
 	}
