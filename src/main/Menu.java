@@ -35,7 +35,7 @@ public class Menu implements InputProviderListener {
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		g.setFont(titleFont);
-		g.drawString("Forgotten Space", 100, 100);
+		g.drawString(game.getTitle(), 100, 100);
 		g.resetFont();
 		
 		for (int i = 0; i < options.length; i++) {
