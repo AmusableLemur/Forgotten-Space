@@ -6,30 +6,45 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 public class Game extends BasicGame {
+	private Menu menu;
 	private State state;
 
 	public Game(String title) {
 		super(title);
 		
+		this.menu = new Menu();
 		this.state = State.MENU;
 	}
 
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		// TODO Auto-generated method stub
-		
+		switch (state) {
+			default:
+			case MENU:
+				menu.render(gc, g);
+			case PAUSED:
+				break;
+			case PLAYING:
+				break;
+		}
 	}
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
-		// TODO Auto-generated method stub
-		
+		menu.init(gc);
 	}
 
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
-		// TODO Auto-generated method stub
-		
+		switch (state) {
+			default:
+			case MENU:
+				menu.update(gc, delta);
+			case PAUSED:
+				break;
+			case PLAYING:
+				break;
+		}
 	}
 
 	public void setState(State state) {
