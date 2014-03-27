@@ -5,14 +5,18 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import player.Player;
+
 public class Game extends BasicGame {
 	private Menu menu;
+	private Player player;
 	private State state;
 
 	public Game(String title) {
 		super(title);
 		
 		this.menu = new Menu(this);
+		this.player = new Player();
 		this.state = State.MENU;
 	}
 
@@ -22,9 +26,11 @@ public class Game extends BasicGame {
 			default:
 			case MENU:
 				menu.render(gc, g);
+				break;
 			case PAUSED:
 				break;
 			case PLAYING:
+				player.render(gc, g);
 				break;
 		}
 	}
@@ -32,6 +38,7 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		menu.init(gc);
+		player.init(gc);
 	}
 
 	@Override
@@ -43,6 +50,7 @@ public class Game extends BasicGame {
 			case PAUSED:
 				break;
 			case PLAYING:
+				player.update(gc, delta);
 				break;
 			case QUIT:
 				gc.exit();
