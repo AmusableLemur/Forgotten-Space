@@ -11,8 +11,10 @@ import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Transform;
 
-public class Player implements InputProviderListener {
+public class Player extends Shape implements InputProviderListener {
 	private InputProvider provider;
 
 	private Command commandUp = new BasicCommand("up");
@@ -68,6 +70,9 @@ public class Player implements InputProviderListener {
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
+		x = gc.getInput().getMouseX();
+		y = gc.getInput().getMouseY();
+
 		if (up) {
 			y -= speed;
 		}
@@ -121,5 +126,15 @@ public class Player implements InputProviderListener {
 		if (command.equals(commandRight)) {
 			right = false;
 		}
+	}
+
+	@Override
+	public Shape transform(Transform transform) {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	protected void createPoints() {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }
