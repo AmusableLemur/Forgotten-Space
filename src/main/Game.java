@@ -1,14 +1,20 @@
 package main;
 
+import gui.Menu;
+
+import java.util.ArrayList;
+
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.*;
 
 import player.Player;
 
 public class Game extends BasicGame {
+	private ArrayList<Shape> walls;
 	private Menu menu;
 	private Player player;
 	private State state;
@@ -16,6 +22,7 @@ public class Game extends BasicGame {
 	public Game(String title) {
 		super(title);
 		
+		this.walls = new ArrayList<>();
 		this.menu = new Menu(this);
 		this.player = new Player();
 		this.state = State.MENU;

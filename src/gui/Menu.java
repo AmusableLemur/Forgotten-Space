@@ -1,6 +1,10 @@
-package main;
+package gui;
 
 import java.awt.Font;
+import java.util.ArrayList;
+
+import main.Game;
+import main.State;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -15,22 +19,27 @@ import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
 public class Menu implements InputProviderListener {
-	private static final String[] options = {"Play", "Settings", "Quit"};
-	
 	private int choice;
 	
-	private TrueTypeFont titleFont;
+	private ArrayList<Button> buttons;
 	
 	private Command up = new BasicCommand("up");
 	private Command down = new BasicCommand("down");
 	private Command select = new BasicCommand("select");
 	
-	private InputProvider provider;
-	
 	private Game game;
 	
+	private InputProvider provider;
+	
+	private TrueTypeFont titleFont;
+	
 	public Menu(Game g) {
+		this.buttons = new ArrayList<Button>();
 		this.game = g;
+		
+		buttons.add(new Button("Play"));
+		buttons.add(new Button("Settings"));
+		buttons.add(new Button("Quit"));
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
@@ -38,14 +47,14 @@ public class Menu implements InputProviderListener {
 		g.drawString(game.getTitle(), 100, 100);
 		g.resetFont();
 		
-		for (int i = 0; i < options.length; i++) {
+		for (int i = 0; i < buttons.size(); i++) {
 			if (i == choice) {
 				g.setColor(Color.darkGray);
 				g.fillRect(90, 150 + i * 20, 100, 20);
 				g.setColor(Color.white);
 			}
 			
-			g.drawString(options[i], 100, 150 + i * 20);
+			g.drawString(buttons.get(i).getLabel(), 100, 150 + i * 20);
 		}
 	}
 
@@ -83,8 +92,8 @@ public class Menu implements InputProviderListener {
 		if (c.equals(down)) {
 			choice += 1;
 			
-			if (choice >= options.length) {
-				choice = options.length - 1;
+			if (choice >= buttons.size()) {
+				choice = buttons.size() - 1;
 			}
 		}
 		
