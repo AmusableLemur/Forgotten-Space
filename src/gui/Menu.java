@@ -17,17 +17,25 @@ import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
+import org.newdawn.slick.command.MouseButtonControl;
 
 public class Menu implements InputProviderListener {
+	private static final int buttonHeight = 20;
+	private static final int buttonWidth = 100;
+	private static final int buttonsX = 100;
+	private static final int buttonsY = 150;
+	
 	private int choice;
 	
 	private ArrayList<Button> buttons;
 	
 	private Command up = new BasicCommand("up");
 	private Command down = new BasicCommand("down");
-	private Command select = new BasicCommand("select");
+	private Command click = new BasicCommand("select");
 	
 	private Game game;
+	
+	private GameContainer gameContainer;
 	
 	private InputProvider provider;
 	
@@ -43,18 +51,29 @@ public class Menu implements InputProviderListener {
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
+		Input input = gc.getInput();
+		
 		g.setFont(titleFont);
 		g.drawString(game.getTitle(), 100, 100);
 		g.resetFont();
 		
 		for (int i = 0; i < buttons.size(); i++) {
-			if (i == choice) {
+			int x = buttonsX;
+			int y = buttonsY + i * buttonHeight;
+			
+			// IF (mouse on button) OR (mouse not on button AND choice == button)
+			// TODO: Clean this up
+			if ((input.getMouseX() > (x - 10) && input.getMouseX() < (x + buttonWidth - 10) &&
+					input.getMouseY() > y && input.getMouseY() < (y + buttonHeight)) ||
+					(input.getMouseX() < (buttonsX - 10) && input.getMouseX() > (buttonsX + buttonWidth - 10) &&
+					input.getMouseY() > (buttonsY + buttonHeight * buttons.size()) && input.getMouseY() < buttonsY) &&
+					i == choice) {
 				g.setColor(Color.darkGray);
-				g.fillRect(90, 150 + i * 20, 100, 20);
+				g.fillRect(x - 10, y, buttonWidth, buttonHeight);
 				g.setColor(Color.white);
 			}
 			
-			g.drawString(buttons.get(i).getLabel(), 100, 150 + i * 20);
+			g.drawString(buttons.get(i).getLabel(), x, y);
 		}
 	}
 
@@ -64,6 +83,8 @@ public class Menu implements InputProviderListener {
 		font = new Font("Courier New", Font.BOLD, 24);
 		titleFont = new TrueTypeFont(font, true);
 		
+		gameContainer = gc;
+		
 		provider = new InputProvider(gc.getInput());
 
 		provider.addListener(this);
@@ -71,12 +92,29 @@ public class Menu implements InputProviderListener {
 		provider.bindCommand(new KeyControl(Input.KEY_W), up);
 		provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
 		provider.bindCommand(new KeyControl(Input.KEY_S), down);
-		provider.bindCommand(new KeyControl(Input.KEY_ENTER), select);
-		provider.bindCommand(new KeyControl(Input.KEY_SPACE), select);
+		provider.bindCommand(new KeyControl(Input.KEY_ENTER), click);
+		provider.bindCommand(new KeyControl(Input.KEY_SPACE), click);
+		provider.bindCommand(new MouseButtonControl(Input.MOUSE_LEFT_BUTTON), click);
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
 		
+	}
+	
+	private int getCurrentButton() {
+		Input input = gameContainer.getInput();
+		
+		for (int i = 0; i < buttons.size(); i++) {
+			int x = buttonsX;
+			int y = buttonsY + i * buttonHeight;
+			
+			if (input.getMouseX() > (x - 10) && input.getMouseX() < (x + buttonWidth - 10) &&
+					input.getMouseY() > y && input.getMouseY() < (y + buttonHeight)) {
+				return i;
+			}
+		}
+		
+		return choice;
 	}
 
 	@Override
@@ -97,7 +135,7 @@ public class Menu implements InputProviderListener {
 			}
 		}
 		
-		if (c.equals(select)) {
+		if (c.equals(click)) {
 			if (choice == 0) {
 				game.setState(State.PLAYING);
 			}
