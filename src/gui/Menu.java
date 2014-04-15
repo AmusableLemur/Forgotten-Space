@@ -35,8 +35,6 @@ public class Menu implements InputProviderListener {
 	
 	private Game game;
 	
-	private GameContainer gameContainer;
-	
 	private InputProvider provider;
 	
 	private TrueTypeFont titleFont;
@@ -49,10 +47,32 @@ public class Menu implements InputProviderListener {
 		buttons.add(new Button("Settings"));
 		buttons.add(new Button("Quit"));
 	}
+	
+	private boolean isMouseOnButton(int x, int y, int mouseX, int mouseY) {
+		if (mouseX < x - 10) {
+			// Mouse is left of button
+			return false;
+		}
+		
+		if (mouseX > x + buttonWidth - 10) {
+			// Mouse is right of button
+			return false;
+		}
+		
+		if (mouseY < y) {
+			// Mouse is above button
+			return false;
+		}
+		
+		if (mouseY > (y + buttonHeight)) {
+			// Mouse is below button
+			return false;
+		}
+		
+		return true;
+	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		Input input = gc.getInput();
-		
 		g.setFont(titleFont);
 		g.drawString(game.getTitle(), 100, 100);
 		g.resetFont();
@@ -61,13 +81,7 @@ public class Menu implements InputProviderListener {
 			int x = buttonsX;
 			int y = buttonsY + i * buttonHeight;
 			
-			// IF (mouse on button) OR (mouse not on button AND choice == button)
-			// TODO: Clean this up
-			if ((input.getMouseX() > (x - 10) && input.getMouseX() < (x + buttonWidth - 10) &&
-					input.getMouseY() > y && input.getMouseY() < (y + buttonHeight)) ||
-					(input.getMouseX() < (buttonsX - 10) && input.getMouseX() > (buttonsX + buttonWidth - 10) &&
-					input.getMouseY() > (buttonsY + buttonHeight * buttons.size()) && input.getMouseY() < buttonsY) &&
-					i == choice) {
+			if (i == choice) {
 				g.setColor(Color.darkGray);
 				g.fillRect(x - 10, y, buttonWidth, buttonHeight);
 				g.setColor(Color.white);
@@ -83,8 +97,6 @@ public class Menu implements InputProviderListener {
 		font = new Font("Courier New", Font.BOLD, 24);
 		titleFont = new TrueTypeFont(font, true);
 		
-		gameContainer = gc;
-		
 		provider = new InputProvider(gc.getInput());
 
 		provider.addListener(this);
@@ -98,23 +110,16 @@ public class Menu implements InputProviderListener {
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
-		
-	}
-	
-	private int getCurrentButton() {
-		Input input = gameContainer.getInput();
+		Input input = gc.getInput();
 		
 		for (int i = 0; i < buttons.size(); i++) {
 			int x = buttonsX;
 			int y = buttonsY + i * buttonHeight;
 			
-			if (input.getMouseX() > (x - 10) && input.getMouseX() < (x + buttonWidth - 10) &&
-					input.getMouseY() > y && input.getMouseY() < (y + buttonHeight)) {
-				return i;
+			if (isMouseOnButton(x, y, input.getMouseX(), input.getMouseY())) {
+				choice = i;
 			}
 		}
-		
-		return choice;
 	}
 
 	@Override
