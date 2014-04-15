@@ -139,7 +139,10 @@ public class Menu implements InputProviderListener {
 				choice = buttons.size() - 1;
 			}
 		}
-		
+	}
+
+	@Override
+	public void controlReleased(Command c) {
 		if (c.equals(click)) {
 			if (choice == 0) {
 				game.setState(State.PLAYING);
@@ -148,10 +151,5 @@ public class Menu implements InputProviderListener {
 				game.setState(State.QUIT);
 			}
 		}
-	}
-
-	@Override
-	public void controlReleased(Command c) {
-		//System.out.println(c.toString());
 	}
 }
